@@ -36,6 +36,7 @@ from pathlib import Path
 from docling_core.types.doc import ImageRefMode
 
 from docling.backend.docling_parse_backend import DoclingParseDocumentBackend
+from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.datamodel.base_models import ConversionStatus, InputFormat
 from docling.datamodel.document import ConversionResult
 from docling.datamodel.pipeline_options import ThreadedPdfPipelineOptions
@@ -45,10 +46,6 @@ from docling.datamodel.accelerator_options import AcceleratorDevice, Accelerator
 
 _log = logging.getLogger(__name__)
 
-# Export toggles:
-# - USE_V2 controls modern Docling document exports.
-# - USE_LEGACY enables legacy Deep Search exports for comparison or migration.
-USE_V2 = True
 NUM_THREADS = 32
 
 def export_documents(
@@ -66,12 +63,10 @@ def export_documents(
             success_count += 1
             doc_filename = conv_res.input.file.stem
 
-            if USE_V2:
-                conv_res.document.save_as_markdown(
-                    output_dir / f"{doc_filename}.txt",
-                    image_mode=ImageRefMode.PLACEHOLDER,
-                    strict_text=True,
-                )
+            conv_res.document.save_as_markdown(
+                output_dir / f"{doc_filename}.txt",
+                image_mode=ImageRefMode.PLACEHOLDER,
+            )
 
         elif conv_res.status == ConversionStatus.PARTIAL_SUCCESS:
             _log.info(
@@ -125,13 +120,14 @@ def main():
         layout_batch_size=4,
         table_batch_size=4,
         batch_timeout_seconds=2.0,
-        queue_max_size=100
+        queue_max_size=100,
+        
     )
 
     doc_converter = DocumentConverter(
         format_options={
             InputFormat.PDF: PdfFormatOption(
-                pipeline_options=pipeline_options, backend=DoclingParseDocumentBackend
+                pipeline_options=pipeline_options, backend=PyPdfiumDocumentBackend
             )
         }
     )
