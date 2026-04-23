@@ -38,7 +38,7 @@ from docling_core.types.doc import ImageRefMode
 from docling.backend.docling_parse_backend import DoclingParseDocumentBackend
 from docling.datamodel.base_models import ConversionStatus, InputFormat
 from docling.datamodel.document import ConversionResult
-from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.datamodel.pipeline_options import ThreadedPdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 
 from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
@@ -49,7 +49,7 @@ _log = logging.getLogger(__name__)
 # - USE_V2 controls modern Docling document exports.
 # - USE_LEGACY enables legacy Deep Search exports for comparison or migration.
 USE_V2 = True
-NUM_THREADS = 16
+NUM_THREADS = 32
 
 def export_documents(
     conv_results: Iterable[ConversionResult],
@@ -114,8 +114,19 @@ def main():
     # Configure the PDF pipeline. Enabling page image generation improves HTML
     # previews (embedded images) but adds processing time.
     gpu_accel = AcceleratorOptions(num_threads=NUM_THREADS, device=AcceleratorDevice.CUDA)
-    pipeline_options = PdfPipelineOptions(accelerator_options=gpu_accel)
-    pipeline_options.generate_page_images = True
+    pipeline_options = ThreadedPdfPipelineOptions(
+        accelerator_options=gpu_accel,
+        generate_page_images=False,
+        generate_picture_images=False,
+        do_table_structure=False,
+        do_code_enrichment=False,
+        do_formula_enrichment=False,
+        ocr_batch_size=4,
+        layout_batch_size=4,
+        table_batch_size=4,
+        batch_timeout_seconds=2.0,
+        queue_max_size=100
+    )
 
     doc_converter = DocumentConverter(
         format_options={
