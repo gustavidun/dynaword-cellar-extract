@@ -142,7 +142,7 @@ def main():
     )
     # Write outputs to ./scratch and log a summary.
     _success_count, _partial_success_count, failure_count = export_documents(
-        conv_results, output_dir=Path("scratch")
+        conv_results, output_dir=Path("scratch_pypdfium")
     )
 
     end_time = time.time() - start_time
