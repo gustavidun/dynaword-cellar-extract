@@ -72,10 +72,9 @@ if __name__ == "__main__":
         
         # Step A: Fetch and save the raw files for this shard into 'OUT'
         print("Downloading files...")
-        current_shard.map(fetch_and_save, with_indices=True)
+        current_shard.map(fetch_and_save)
         
         # Step B: Run the Docling conversion
-        # NOTE: Make sure `main()` writes its output to a DIFFERENT folder (e.g., 'scratch')
         print("Running Docling conversion...")
         try:
             main()
