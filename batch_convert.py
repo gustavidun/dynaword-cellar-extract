@@ -93,7 +93,7 @@ def main():
     # Location of sample PDFs used by this example. If your checkout does not
     # include test data, change `data_folder` or point `input_doc_paths` to
     # your own files.
-    data_folder = Path(__file__).parent / "nor_files"
+    data_folder = Path(__file__).parent / "out"
     input_doc_paths = data_folder.glob("*.pdf")
 
     # buf = BytesIO((data_folder / "pdf/2206.01062.pdf").open("rb").read())
@@ -116,18 +116,18 @@ def main():
         do_table_structure=False,
         do_code_enrichment=False,
         do_formula_enrichment=False,
-        ocr_batch_size=4,
-        layout_batch_size=4,
-        table_batch_size=4,
+        ocr_batch_size=64,
+        layout_batch_size=64,
+        table_batch_size=64,
         batch_timeout_seconds=2.0,
-        queue_max_size=100,
+        queue_max_size=1000,
         
     )
 
     doc_converter = DocumentConverter(
         format_options={
             InputFormat.PDF: PdfFormatOption(
-                pipeline_options=pipeline_options, backend=PyPdfiumDocumentBackend
+                pipeline_options=pipeline_options, backend=DoclingParseDocumentBackend
             )
         }
     )
@@ -142,7 +142,7 @@ def main():
     )
     # Write outputs to ./scratch and log a summary.
     _success_count, _partial_success_count, failure_count = export_documents(
-        conv_results, output_dir=Path("scratch_pypdfium")
+        conv_results, output_dir=Path("scratch")
     )
 
     end_time = time.time() - start_time
@@ -153,7 +153,6 @@ def main():
         raise RuntimeError(
             f"The example failed converting {failure_count} on {len(input_doc_paths)}."
         )
-
 
 if __name__ == "__main__":
     main()
