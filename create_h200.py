@@ -11,15 +11,20 @@ LANGCODE = "SWE"
 SOURCE = "cellar"
 OUT = Path(__file__).parent / "out"
 OUT.mkdir(parents=True, exist_ok=True)
+
+DS_PATH = Path(__file__).parent / "swedish_metadata"
+DS_PATH.mkdir(parents=True, exist_ok=True)
+
 NUM_SHARDS = 100
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
 def fetch(url):
     return requests.get(url, timeout=30)
 
-def fetch_and_save(example, idx):
+def fetch_and_save(example):
     type = example["type"]
     url = example["item"]
+    idx = example["global_index"]
 
     try:
         resp = fetch(url)
@@ -53,7 +58,9 @@ def clear_directory(dir_path: Path):
 if __name__ == "__main__":
     # 1. Filter the dataset first to get the exact target records
     filtered_ds = ds.filter(lambda x: x["langCode"] == LANGCODE)
-    
+    filtered_ds = filtered_ds.add_column("global_index", range(len(filtered_ds)))
+    filtered_ds.save_to_disk(DS_PATH)
+
     # 2. Iterate over the dataset in shards
     for shard_idx in range(NUM_SHARDS):
         print(f"\n{'='*50}")
