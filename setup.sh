@@ -1,3 +1,4 @@
+cd dynaword-cellar-extract
 git pull
 python3 -m venv .venv
 source .venv/bin/activate
