@@ -39,7 +39,8 @@ from docling.backend.docling_parse_backend import DoclingParseDocumentBackend
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.datamodel.base_models import ConversionStatus, InputFormat
 from docling.datamodel.document import ConversionResult
-from docling.datamodel.pipeline_options import ThreadedPdfPipelineOptions
+from docling.datamodel.pipeline_options import ThreadedPdfPipelineOptions, RapidOcrOptions
+from docling.pipeline.threaded_standard_pdf_pipeline import ThreadedStandardPdfPipeline
 from docling.document_converter import DocumentConverter, PdfFormatOption
 
 from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
@@ -113,21 +114,21 @@ def main():
         accelerator_options=gpu_accel,
         generate_page_images=False,
         generate_picture_images=False,
-        do_table_structure=False,
-        do_code_enrichment=False,
-        do_formula_enrichment=False,
+        do_table_structure=True,
+        do_code_enrichment=True,
+        do_formula_enrichment=True,
         ocr_batch_size=64,
         layout_batch_size=64,
         table_batch_size=64,
         batch_timeout_seconds=2.0,
-        queue_max_size=1000,
-        
+        queue_max_size=1000,   
+        ocr_options=RapidOcrOptions(backend="torch")
     )
 
     doc_converter = DocumentConverter(
         format_options={
             InputFormat.PDF: PdfFormatOption(
-                pipeline_options=pipeline_options, backend=DoclingParseDocumentBackend
+                pipeline_options=pipeline_options, backend=DoclingParseDocumentBackend, pipeline_cls=ThreadedStandardPdfPipeline
             )
         }
     )

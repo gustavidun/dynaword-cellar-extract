@@ -1,4 +1,5 @@
 from pathlib import Path
+from time import sleep
 
 from batch_convert import main
 from datasets import load_dataset
@@ -15,7 +16,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 DS_PATH = Path(__file__).parent / "swedish_metadata"
 DS_PATH.mkdir(parents=True, exist_ok=True)
 
-NUM_SHARDS = 100
+NUM_SHARDS = 500
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
 def fetch(url):
@@ -44,9 +45,13 @@ def fetch_and_save(example):
             with open(OUT / f"{idx}.xml", "wb+") as f: 
                 f.write(resp.content) 
         
+        else:
+            print(f"Skipping non-compatible filetype {type}.")
+
     except Exception as e:
         print(f"File error, skipping... {e}")
     
+    sleep(0.1)
     return None
 
 def clear_directory(dir_path: Path):
@@ -85,4 +90,4 @@ if __name__ == "__main__":
         print("Cleaning up raw staging files...")
         clear_directory(OUT)
 
-        print("\nAll shards processed successfully!")
+    print("\nAll shards processed successfully!")
