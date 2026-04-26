@@ -1,0 +1,5 @@
+docling
+polars
+requests
+tenacity
+datasets
