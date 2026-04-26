@@ -44,7 +44,7 @@ from docling.pipeline.threaded_standard_pdf_pipeline import ThreadedStandardPdfP
 from docling.document_converter import DocumentConverter, PdfFormatOption
 
 from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
-from config import NUM_THREADS, DOCLING_BATCH_SIZE, DOCLING_QUEUE_SIZE, ROOT
+from config import NUM_THREADS, DOCLING_BATCH_SIZE, DOCLING_QUEUE_SIZE, ROOT, EXTRACT_OUT
 
 
 _log = logging.getLogger(__name__)
@@ -143,7 +143,7 @@ def convert():
     )
     # Write outputs to ./scratch and log a summary.
     _success_count, _partial_success_count, failure_count = export_documents(
-        conv_results, output_dir=ROOT / Path("scratch")
+        conv_results, output_dir=EXTRACT_OUT
     )
 
     end_time = time.time() - start_time
