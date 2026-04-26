@@ -1,6 +1,8 @@
 from docling.datamodel.accelerator_options import AcceleratorDevice
 from pathlib import Path
 
+from typing import Literal
+
 ROOT = Path(__file__).parents[1]
 
 RAW_OUT = ROOT / "out"
@@ -8,6 +10,8 @@ RAW_OUT.mkdir(parents=True, exist_ok=True)
 
 EXTRACT_OUT = ROOT / "out_extracted"
 EXTRACT_OUT.mkdir(parents=True, exist_ok=True) 
+
+EXTRACTION_LIBRARY : Literal["marker", "docling"] = "marker"
 
 NUM_THREADS = 60
 DOCLING_BATCH_SIZE = 64

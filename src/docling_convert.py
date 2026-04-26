@@ -88,7 +88,7 @@ def export_documents(
     return success_count, partial_success_count, failure_count
 
 
-def convert():
+def docling_convert():
     logging.basicConfig(level=logging.INFO)
 
     # Location of sample PDFs used by this example. If your checkout does not
@@ -154,6 +154,3 @@ def convert():
         raise RuntimeError(
             f"The example failed converting {failure_count} on {len(input_doc_paths)}."
         )
-
-if __name__ == "__main__":
-    convert()

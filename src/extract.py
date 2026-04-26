@@ -5,8 +5,10 @@ from datasets import load_dataset
 from tenacity import retry, stop_after_attempt, wait_exponential
 import requests
 
-from docling_convert import convert
-from config import ROOT, RAW_OUT
+from docling_convert import docling_convert
+from marker_convert import marker_convert
+
+from config import ROOT, RAW_OUT, EXTRACTION_LIBRARY
 
 ds = load_dataset("gustavidun/cellar-metadata", split="train")
 LANGCODE = "SWE"
@@ -72,11 +74,13 @@ if __name__ == "__main__":
         print("Downloading files...")
         current_shard.map(fetch_and_save)
         
-        print("Running Docling conversion...")
+        print("Running conversion...")
         try:
-            convert()
+            if EXTRACTION_LIBRARY == "marker": marker_convert()
+            if EXTRACTION_LIBRARY == "docling": docling_convert()
+            
         except Exception as e:
-            print(f"Docling conversion failed on shard {shard_idx + 1}: {e}")
+            print(f"Conversion failed on shard {shard_idx + 1}: {e}")
         
         print("Cleaning up raw staging files...")
         clear_directory(RAW_OUT)
