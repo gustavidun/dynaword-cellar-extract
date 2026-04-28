@@ -1,32 +1,3 @@
-# %% [markdown]
-# Batch convert multiple PDF files and export results in several formats.
-
-# What this example does
-# - Loads a small set of sample PDFs.
-# - Runs the Docling PDF pipeline once per file.
-# - Writes outputs to `scratch/` in multiple formats (JSON, HTML, Markdown, text, doctags, YAML).
-
-# Prerequisites
-# - Install Docling and dependencies as described in the repository README.
-# - Ensure you can import `docling` from your Python environment.
-# <!-- YAML export requires `PyYAML` (`pip install pyyaml`). -->
-
-# Input documents
-# - By default, this example uses a few PDFs from `tests/data/pdf/` in the repo.
-# - If you cloned without test data, or want to use your own files, edit
-#   `input_doc_paths` below to point to PDFs on your machine.
-
-# Output formats (controlled by flags)
-# - `USE_V2 = True` enables the current Docling document exports (recommended).
-# - `USE_LEGACY = False` keeps legacy Deep Search exports disabled.
-#   You can set it to `True` if you need legacy formats for compatibility tests.
-
-# Notes
-# - Set `pipeline_options.generate_page_images = True` to include page images in HTML.
-# - The script logs conversion progress and raises if any documents fail.
-# <!-- This example shows both helper methods like `save_as_*` and lower-level
-#   `export_to_*` + manual file writes; outputs may overlap intentionally. -->
-# %%
 
 import logging
 import time
@@ -44,7 +15,7 @@ from docling.pipeline.threaded_standard_pdf_pipeline import ThreadedStandardPdfP
 from docling.document_converter import DocumentConverter, PdfFormatOption
 
 from docling.datamodel.accelerator_options import AcceleratorDevice, AcceleratorOptions
-from config import NUM_THREADS, DOCLING_BATCH_SIZE, DOCLING_QUEUE_SIZE, ROOT, EXTRACT_OUT
+from config import NUM_THREADS, DOCLING_BATCH_SIZE, DOCLING_QUEUE_SIZE, ROOT, EXTRACT_OUT, docling_device, RAW_OUT
 
 
 _log = logging.getLogger(__name__)
@@ -94,8 +65,7 @@ def docling_convert():
     # Location of sample PDFs used by this example. If your checkout does not
     # include test data, change `data_folder` or point `input_doc_paths` to
     # your own files.
-    data_folder = ROOT / "out"
-    input_doc_paths = data_folder.glob("*.pdf")
+    input_doc_paths = RAW_OUT.glob("*.pdf")
 
     # buf = BytesIO((data_folder / "pdf/2206.01062.pdf").open("rb").read())
     # docs = [DocumentStream(name="my_doc.pdf", stream=buf)]
@@ -109,7 +79,7 @@ def docling_convert():
 
     # Configure the PDF pipeline. Enabling page image generation improves HTML
     # previews (embedded images) but adds processing time.
-    gpu_accel = AcceleratorOptions(num_threads=NUM_THREADS, device=AcceleratorDevice.CUDA)
+    gpu_accel = AcceleratorOptions(num_threads=NUM_THREADS, device=docling_device)
     pipeline_options = ThreadedPdfPipelineOptions(
         accelerator_options=gpu_accel,
         generate_page_images=False,
