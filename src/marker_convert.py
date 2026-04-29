@@ -1,5 +1,5 @@
 import subprocess
-from config import RAW_OUT, EXTRACT_OUT, NUM_THREADS, MARKER_WORKERS
+from config import RAW_OUT, EXTRACT_OUT, MARKER_WORKERS
 
 def marker_convert():
     subprocess.run(
