@@ -110,6 +110,9 @@ def reformat_samples(example):
 if __name__ == "__main__":
     ds = ds.filter(lambda x: x["langCode"] == LANGCODE)
     ds.map(fetch_and_save)
+
+    
+
     ds = ds.map(reformat_samples)
     ds = ds.filter(lambda x: x["text"] != "") # drop na (type not extractable or fetch error)
 
