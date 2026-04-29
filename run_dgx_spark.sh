@@ -1,5 +1,6 @@
 git pull
 cd src
+export HF_HOME="/home/chc_apps/huggingface"
 export NUM_THREADS=60
 export DOCLING_BATCH_SIZE=64
 export DOCLING_QUEUE_SIZE=100
