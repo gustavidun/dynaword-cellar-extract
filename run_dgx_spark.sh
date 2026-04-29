@@ -1,0 +1,3 @@
+git pull
+cd src
+NUM_THREADS = 60 DOCLING_BATCH_SIZE = 64 DOCLING_QUEUE_SIZE = 100 DOCLING_DEVICE = "cuda" MARKER_WORKERS = 32 LANGCODE = "NOR" EXTRACTION_LIBRARY = "marker" NUM_SHARDS = 1 DS_NAME = "norwegian_metadata" python -m extract
